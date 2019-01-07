@@ -9,11 +9,20 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
 public class LoginActivity extends AppCompatActivity {
 
+    @BindView(R.id.etx_username)
     EditText etxUserName;
+    @BindView(R.id.etx_password)
     EditText etxPassword;
+    @BindView(R.id.btn_submit)
     Button btnSubmit;
+
+
     private SharedPreferences sharedPreferences;
     public static final String SHAREDPREFENCE_NAME = "FirstApp";
     public static final String KEY_USERNAME = "user_name";
@@ -23,32 +32,24 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        etxUserName = findViewById(R.id.etx_username);
-        etxPassword = findViewById(R.id.etx_password);
-        btnSubmit = findViewById(R.id.btn_submit);
-
-
-        btnSubmit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (etxUserName.getText().toString().equals("admin")
-                        && etxPassword.getText().toString().equals("1234")) {
-                    Toast.makeText(LoginActivity.this, "sucess", Toast.LENGTH_LONG).show();
-                    SharedPreferences.Editor preferedEditor = sharedPreferences.edit();
-                    preferedEditor.putString(KEY_USERNAME, etxUserName.getText().toString());
-                    preferedEditor.apply();
-                    Intent mainIntent = new Intent(LoginActivity.this,DashboardActivity.class);
-                    startActivity(mainIntent);
-                    finish();
-                } else {
-                    Toast.makeText(LoginActivity.this, "fail", Toast.LENGTH_LONG).show();
-                }
-            }
-        });
+        ButterKnife.bind(this);
         sharedPreferences = getSharedPreferences(SHAREDPREFENCE_NAME, MODE_PRIVATE);
-
-
     }
 
+    @OnClick(R.id.btn_submit)
+    public void logIn() {
+        if (etxUserName.getText().toString().equals("admin")
+                && etxPassword.getText().toString().equals("1234")) {
+            Toast.makeText(LoginActivity.this, "sucess", Toast.LENGTH_LONG).show();
+            SharedPreferences.Editor preferedEditor = sharedPreferences.edit();
+            preferedEditor.putString(KEY_USERNAME, etxUserName.getText().toString());
+            preferedEditor.apply();
+            Intent mainIntent = new Intent(LoginActivity.this, DashboardActivity.class);
+            startActivity(mainIntent);
+            finish();
+        } else {
+            Toast.makeText(LoginActivity.this, "fail", Toast.LENGTH_LONG).show();
+        }
+    }
 
 }
