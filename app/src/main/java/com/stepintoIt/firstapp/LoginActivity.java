@@ -13,6 +13,18 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -34,6 +46,7 @@ public class LoginActivity extends AppCompatActivity {
     private SharedPreferences sharedPreferences;
     public static final String SHAREDPREFENCE_NAME = "FirstApp";
     public static final String KEY_USERNAME = "user_name";
+    public static final String BASE_URL = "https://reqres.in/api/login";
 
 
     @Override
@@ -46,12 +59,12 @@ public class LoginActivity extends AppCompatActivity {
 
     @OnClick(R.id.btn_submit)
     public void logIn() {
-        new LogingAsyncTask().execute(etxUserName.getText().toString(), etxPassword.getText().toString());
+        new LogingAsyncTask().execute(etxUserName.getText().toString(), etxPassword.getText().toString(), BASE_URL);
 
 
     }
 
-    private class LogingAsyncTask extends AsyncTask<String, Integer, Boolean>{
+    private class LogingAsyncTask extends AsyncTask<String, Integer, String>{
 
         @Override
         protected void onPreExecute() {
@@ -61,54 +74,103 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         @Override
-        protected Boolean doInBackground(String... strings) {
+        protected String doInBackground(String... strings) {
             String userName = strings[0];
             String passWord = strings[1];
+            try {
+                // This is getting the url from the string we passed in
+                URL url = new URL(strings[2]);
 
-            for (int i = 0; i <5 ; i++) {
+                // Create the urlConnection
+                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
 
-                try {
-                    Thread.sleep(1000);
-                    onProgressUpdate(i);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+
+                urlConnection.setDoInput(true);
+                urlConnection.setDoOutput(true);
+
+                urlConnection.setRequestProperty("Content-Type", "application/json");
+
+                urlConnection.setRequestMethod("POST");
+
+
+                // OPTIONAL - Sets an authorization header
+                urlConnection.setRequestProperty("Authorization", "someAuthString");
+                JSONObject requestParameterJsonObject = new JSONObject();
+                requestParameterJsonObject.put("email", userName);
+                requestParameterJsonObject.put("password", passWord);
+
+                // Send the post body
+                if (requestParameterJsonObject != null) {
+                    OutputStreamWriter writer = new OutputStreamWriter(urlConnection.getOutputStream());
+                    writer.write(requestParameterJsonObject.toString());
+                    writer.flush();
                 }
+
+                int statusCode = urlConnection.getResponseCode();
+
+                if (statusCode ==  200) {
+
+                    InputStream inputStream = new BufferedInputStream(urlConnection.getInputStream());
+
+                    String response = convertInputStreamToString(inputStream);
+                    return response;
+
+                    // From here you can convert the string to JSON with whatever JSON parser you like to use
+                    // After converting the string to JSON, I call my custom callback. You can follow this process too, or you can implement the onPostExecute(Result) method
+                } else {
+                    // Status code is not 200
+                    // Do something to handle the error
+                }
+
+            } catch (Exception e) {
+               e.printStackTrace();
             }
-            if (etxUserName.getText().toString().equals("admin")
-                    && etxPassword.getText().toString().equals("1234")){
-                return true;
+            return null;
+        }
+
+        private String convertInputStreamToString(InputStream inputStream) {
+            try {
+                BufferedReader r = new BufferedReader(new InputStreamReader(inputStream));
+                StringBuilder total = new StringBuilder();
+                for (String line; (line = r.readLine()) != null; ) {
+                    total.append(line).append('\n');
+                }
+                return total.toString();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-            else{
-                return false;
-            }
+            return null;
         }
 
         @Override
         protected void onProgressUpdate(final Integer... values) {
             super.onProgressUpdate(values);
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    txtCount.setText("count = " + values[0]);
-                }
-            });
 
         }
 
         @Override
-        protected void onPostExecute(Boolean aBoolean) {
-            super.onPostExecute(aBoolean);
-            if (aBoolean == true) {
-                Toast.makeText(LoginActivity.this, "sucess", Toast.LENGTH_LONG).show();
-                SharedPreferences.Editor preferedEditor = sharedPreferences.edit();
-                preferedEditor.putString(KEY_USERNAME, etxUserName.getText().toString());
-                preferedEditor.apply();
-                Intent mainIntent = new Intent(LoginActivity.this, DashboardActivity.class);
-                startActivity(mainIntent);
-                finish();
-            } else {
-                Toast.makeText(LoginActivity.this, "fail", Toast.LENGTH_LONG).show();
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            try {
+                JSONObject responseJsonObject = new JSONObject(result);
+                String token = responseJsonObject.getString("token");
+
+
+                if (token != null && !token.isEmpty()) {
+                    Toast.makeText(LoginActivity.this, "sucess", Toast.LENGTH_LONG).show();
+                    SharedPreferences.Editor preferedEditor = sharedPreferences.edit();
+                    preferedEditor.putString(KEY_USERNAME, etxUserName.getText().toString());
+                    preferedEditor.apply();
+                    Intent mainIntent = new Intent(LoginActivity.this, DashboardActivity.class);
+                    startActivity(mainIntent);
+                    finish();
+                } else {
+                    Toast.makeText(LoginActivity.this, "fail", Toast.LENGTH_LONG).show();
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
+            Toast.makeText(LoginActivity.this, result, Toast.LENGTH_SHORT).show();
 
             pbLogin.setVisibility(View.GONE);
             txtCount.setVisibility(View.GONE);
