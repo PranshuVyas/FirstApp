@@ -155,20 +155,39 @@ public class DashboardActivity extends AppCompatActivity {
                     JSONObject warehouselocationn = productJsonObject.getJSONObject("warehouseLocation");
                     double latitude = warehouselocationn.getDouble("latitude");
                     double longitude = warehouselocationn.getDouble("longitude");
-                    Timber.i("The product name is " + name);
-                    Timber.i("The product id " + productID);
-                    Timber.i("The product description " + description);
-                    Timber.i("The product weight " + weight);
-                    Timber.i("Images " + images.toString());
-                    Timber.i("phone : " + phone);
-                    Timber.i("web : " + web);
-                    Timber.i("price " + price);
-                    Timber.i("tags  " + tags.toString());
-                    Timber.i("The product lenght is " + length);
-                    Timber.i("The product width is " +  width);
-                    Timber.i("The product height is " + height);
-                    Timber.i("The product latitude is " + latitude);
-                    Timber.i("The product lognitude is " + longitude);
+
+                    Product product = new Product();
+                    product.setName(name);
+                    product.setDescription(description);
+                    product.setDimensions(dimensions);
+                    product.setHeight(height);
+                    product.setImages(images);
+                    product.setLatitude(latitude);
+                    product.setLongitude(longitude);
+                    product.setLength(length);
+                    product.setPhone(phone);
+                    product.setPrice(price);
+                    product.setProductID(productID);
+                    product.setTags(tags);
+                    product.setWarehouselocationn(warehouselocationn);
+                    product.setWeb(web);
+                    product.setWeight(weight);
+                    product.setWidth(width);
+
+                    Timber.i("The product name is " + product.getName());
+                    Timber.i("The product id " + product.getProductID());
+                    Timber.i("The product description " + product.getDescription());
+                    Timber.i("The product weight " + product.getWeight());
+                    Timber.i("Images " + product.getImages());
+                    Timber.i("phone : " + product.getPhone());
+                    Timber.i("web : " + product.getWeb());
+                    Timber.i("price " + product.getPrice());
+                    Timber.i("tags  " + product.getTags());
+                    Timber.i("The product lenght is " + product.getLength());
+                    Timber.i("The product width is " +  product.getWidth());
+                    Timber.i("The product height is " + product.getHeight());
+                    Timber.i("The product latitude is " + product.getLatitude());
+                    Timber.i("The product lognitude is " + product.getLongitude());
 
 
 
