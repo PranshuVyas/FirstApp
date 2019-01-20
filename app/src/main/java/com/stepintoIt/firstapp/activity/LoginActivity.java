@@ -163,7 +163,7 @@ public class LoginActivity extends AppCompatActivity {
 //                    SharedPreferences.Editor preferedEditor = sharedPreferences.edit();
 //                    preferedEditor.putString(KEY_USERNAME, etxUserName.getText().toString());
 //                    preferedEditor.apply();
-                     Intent mainIntent = new Intent(LoginActivity.this, JsonRequestActivity.class);
+                     Intent mainIntent = new Intent(LoginActivity.this, DashboardActivity.class);
                      startActivity(mainIntent);
 
                     //Timber.i("name : " + token);

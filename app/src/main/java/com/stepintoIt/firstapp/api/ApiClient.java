@@ -16,7 +16,7 @@ public class ApiClient {
 
 
         retrofit = new Retrofit.Builder()
-                .baseUrl("https://jsonplaceholder.typicode.com")
+                .baseUrl("https://my-json-server.typicode.com/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(client)
                 .build();

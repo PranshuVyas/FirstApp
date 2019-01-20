@@ -22,6 +22,12 @@ public class ProductAdapter extends  RecyclerView.Adapter<ProductAdapter.Product
 
     private Context context;
     private ArrayList<Product> productArrayList;
+    CustomItemClickListener onItemClickListener;
+
+
+    public void setOnItemClickListener(CustomItemClickListener onItemClickListener) {
+        this.onItemClickListener = onItemClickListener;
+    }
 
     public ProductAdapter(Context context, ArrayList<Product> productArrayList){
 
@@ -40,12 +46,20 @@ public class ProductAdapter extends  RecyclerView.Adapter<ProductAdapter.Product
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ProductViewHolder productViewHolder, int i) {
-        Product product = productArrayList.get(i);
+    public void onBindViewHolder(@NonNull final ProductViewHolder productViewHolder, final int i) {
+        final Product product = productArrayList.get(i);
         productViewHolder.txtPrice.setText("Price = " +product.getPrice());
         productViewHolder.txtProductname.setText(product.getName());
-        Timber.i("The product name is " + product.getName());
-        Timber.i("The product id " + product.getProductId());
+//        Timber.i("The product name is " + product.getName());
+//        Timber.i("The product id " + product.getProductId());
+        productViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (onItemClickListener != null){
+                    onItemClickListener.onItemClick(v, i, product);
+                }
+            }
+        });
     }
 
     @Override
