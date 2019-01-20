@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <Button
+        android:id="@+id/btn_userid"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="userID"
+        android:layout_margin="20dp"/>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/btn_body">
+    <TextView
+        android:id="@+id/txt_result"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/btn_id"
+        android:text="result : "
+        android:layout_margin="20dp"/>
+    </ScrollView>
+
+    <Button
+        android:id="@+id/btn_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ID"
+        android:layout_below="@id/btn_userid"
+        android:layout_margin="20dp"/>
+
+
+    <Button
+        android:id="@+id/btn_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/btn_userid"
+        android:text="Title"
+        android:layout_margin="20dp"/>
+
+    <Button
+        android:id="@+id/btn_body"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="BODY"
+        android:layout_toRightOf="@id/btn_id"
+        android:layout_below="@id/btn_title"
+        android:layout_margin="20dp"/>
+
+</RelativeLayout>

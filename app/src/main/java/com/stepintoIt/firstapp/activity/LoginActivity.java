@@ -1,17 +1,18 @@
-package com.stepintoIt.firstapp;
+package com.stepintoIt.firstapp.activity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.stepintoIt.firstapp.R;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -28,6 +29,7 @@ import java.net.URL;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import timber.log.Timber;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -55,8 +57,8 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
         sharedPreferences = getSharedPreferences(SHAREDPREFENCE_NAME, MODE_PRIVATE);
+        Timber.plant(new Timber.DebugTree());
     }
-
     @OnClick(R.id.btn_submit)
     public void logIn() {
         new LogingAsyncTask().execute(etxUserName.getText().toString(), etxPassword.getText().toString(), BASE_URL);
@@ -158,19 +160,21 @@ public class LoginActivity extends AppCompatActivity {
 
                 if (token != null && !token.isEmpty()) {
                     Toast.makeText(LoginActivity.this, "sucess", Toast.LENGTH_LONG).show();
-                    SharedPreferences.Editor preferedEditor = sharedPreferences.edit();
-                    preferedEditor.putString(KEY_USERNAME, etxUserName.getText().toString());
-                    preferedEditor.apply();
-                    Intent mainIntent = new Intent(LoginActivity.this, DashboardActivity.class);
-                    startActivity(mainIntent);
-                    finish();
+//                    SharedPreferences.Editor preferedEditor = sharedPreferences.edit();
+//                    preferedEditor.putString(KEY_USERNAME, etxUserName.getText().toString());
+//                    preferedEditor.apply();
+                     Intent mainIntent = new Intent(LoginActivity.this, JsonRequestActivity.class);
+                     startActivity(mainIntent);
+
+                    //Timber.i("name : " + token);
+//                    finish();
                 } else {
                     Toast.makeText(LoginActivity.this, "fail", Toast.LENGTH_LONG).show();
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            Toast.makeText(LoginActivity.this, result, Toast.LENGTH_SHORT).show();
+            Toast.makeText(LoginActivity.this, "Test", Toast.LENGTH_LONG).show();
 
             pbLogin.setVisibility(View.GONE);
             txtCount.setVisibility(View.GONE);

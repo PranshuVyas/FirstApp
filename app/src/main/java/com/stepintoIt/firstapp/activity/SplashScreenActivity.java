@@ -1,11 +1,12 @@
-package com.stepintoIt.firstapp;
+package com.stepintoIt.firstapp.activity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
+
+import com.stepintoIt.firstapp.R;
 
 public class SplashScreenActivity extends AppCompatActivity {
     private final int SPLASH_DISPLAY_LENGTH = 1000;
