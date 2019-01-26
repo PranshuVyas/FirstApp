@@ -15,6 +15,7 @@ import com.stepintoIt.firstapp.adapter.CustomItemClickListener;
 import com.stepintoIt.firstapp.adapter.ProductAdapter;
 import com.stepintoIt.firstapp.api.ApiClient;
 import com.stepintoIt.firstapp.api.ApiInterface;
+import com.stepintoIt.firstapp.data.DbHelper;
 import com.stepintoIt.firstapp.model.Product;
 
 import java.util.ArrayList;
@@ -35,6 +36,7 @@ public class DashboardActivity extends AppCompatActivity {
     RecyclerView rvProduct;
 
 
+
     private SharedPreferences sharedPreferences;
 
     @Override
@@ -49,31 +51,25 @@ public class DashboardActivity extends AppCompatActivity {
         Timber.plant(new Timber.DebugTree());
         apiInterface = ApiClient.getClient().create(ApiInterface.class);
         getProducts();
-
-
-
     }
 
-    private void getProducts(){
-        Call<ArrayList<Product>> call = apiInterface.getProducts();
-        call.enqueue(new Callback<ArrayList<Product>>() {
-            @Override
-            public void onResponse(Call<ArrayList<Product>> call, Response<ArrayList<Product>> response) {
-                ArrayList<Product> productArrayList = response.body();
+    private void getProducts() {
 
-                ProductAdapter productAdapter = new ProductAdapter(DashboardActivity.this, productArrayList);
-                productAdapter.setOnItemClickListener(new CustomItemClickListener() {
-                    @Override
-                    public void onItemClick(View v, int position, Product product) {
-                        Log.i("Test","Product Name ===== " + product.getName());
-                        Intent intent = new Intent(DashboardActivity.this, ProductDetailActivity.class);
-                        intent.putExtra(ProductDetailActivity.KEY_PRODUCT, product);
-                        startActivity(intent);
+        ArrayList<Product> productArrayList = DbHelper.getInstance(DashboardActivity.this).getProducts();
 
-                    }
-                });
-                rvProduct.setAdapter(productAdapter);
+        if (productArrayList != null && !productArrayList.isEmpty()) {
+            setProdctAdapter(productArrayList);
+        } else {
 
+            Call<ArrayList<Product>> call = apiInterface.getProducts();
+            call.enqueue(new Callback<ArrayList<Product>>() {
+                @Override
+                public void onResponse(Call<ArrayList<Product>> call, Response<ArrayList<Product>> response) {
+                    ArrayList<Product> productArrayList = response.body();
+
+
+                    DbHelper.getInstance(DashboardActivity.this).insetProducts(productArrayList);
+                    setProdctAdapter(productArrayList);
 
 //                for (Product product: productArrayList) {
 //                    Timber.i("The product name is " + product.getName());
@@ -92,15 +88,15 @@ public class DashboardActivity extends AppCompatActivity {
 //                    Timber.i("The product lognitude is " + product.getWarehouseLocation().getLongitude());
 //                }
 
-            }
+                }
 
-            @Override
-            public void onFailure(Call<ArrayList<Product>> call, Throwable t) {
+                @Override
+                public void onFailure(Call<ArrayList<Product>> call, Throwable t) {
 
-            }
-        });
+                }
+            });
+        }
     }
-
 
 
 //    private class LogingAsyncTask extends AsyncTask<String, Integer, String> {
@@ -265,4 +261,23 @@ public class DashboardActivity extends AppCompatActivity {
         startActivity(mainIntent);
         finish();
     }
+
+
+    private void setProdctAdapter(ArrayList<Product> productArrayList){
+        ProductAdapter productAdapter = new ProductAdapter(DashboardActivity.this, productArrayList);
+        productAdapter.setOnItemClickListener(new CustomItemClickListener() {
+            @Override
+            public void onItemClick(View v, int position, Product product) {
+                //Log.i("Test","Product Name ===== " + product.getName());
+                Intent intent = new Intent(DashboardActivity.this, ProductDetailActivity.class);
+                intent.putExtra(ProductDetailActivity.KEY_PRODUCT, product);
+                startActivity(intent);
+
+            }
+        });
+        rvProduct.setAdapter(productAdapter);
+
+    }
+
+
 }
